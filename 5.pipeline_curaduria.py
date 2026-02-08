@@ -4,6 +4,8 @@ Pipeline de Curaduría Automatizada - VERSIÓN FINAL BLINDADA (1TB+)
 ================================================================================
 Tesis de Maestría - Multi-GPU + Split Determinístico + Deduplicación + Vaciado
 ================================================================================
+Cambios recientes:
+- Implementación de Exclusión de Humanos (Filtro Negative Prompt 'person')
 """
 
 import os
@@ -46,7 +48,10 @@ class Config:
 
     MODEL_NAME = "yolov8l-worldv2.pt"
     CONFIDENCE_THRESHOLD = 0.4
-    TARGET_CLASSES = ["cow", "cattle", "bull", "calf", "livestock"]
+    
+    # Clases de interés + "person" como filtro negativo
+    TARGET_CLASSES = ["cow", "cattle", "bull", "calf", "livestock", "person"]
+    CATTLE_CLASSES = ["cow", "cattle", "bull", "calf", "livestock"]
 
     TRAIN_RATIO = 0.8 # 80% Train, 20% Test (Permanente por fecha)
     VRAM_MIN_FREE = 4000  
@@ -55,13 +60,11 @@ class Config:
 # ======================== LÓGICA DE INTELIGENCIA ==============================
 
 def get_split_by_date(date_str: str) -> str:
-    """Decisión matemática permanente por fecha (Determinístico)"""
     hash_digest = hashlib.md5(date_str.encode()).hexdigest()
     hash_int = int(hash_digest[:8], 16) % 100
     return 'train' if hash_int < (Config.TRAIN_RATIO * 100) else 'test'
 
 def get_video_date(path: Path) -> str:
-    # Intenta extraer YYYY-MM-DD de la ruta
     for part in path.parts:
         if len(part) == 10 and part.count('-') == 2:
             return part
@@ -74,7 +77,6 @@ def load_registry() -> pd.DataFrame:
     return pd.DataFrame(columns=['video_name', 'date', 'split', 'status', 'action_taken', 'timestamp'])
 
 def is_already_processed(video_name: str, date_str: str, registry: pd.DataFrame) -> bool:
-    """Verifica si este archivo ya fue procesado con éxito anteriormente"""
     if registry.empty: return False
     match = registry[(registry['video_name'] == video_name) & (registry['date'] == date_str) & (registry['status'] == 'TERMINADO')]
     return not match.empty
@@ -98,13 +100,12 @@ def process_video(video_path: Path, gpu_id: int) -> Dict:
 
     try:
         if split == 'test':
-            # Mover a la estructura de Test
             rel_path = video_path.relative_to(Config.INPUT_DIR)
             dest_path = Config.OUTPUT_DIR / 'test' / 'videos' / rel_path
             dest_path.parent.mkdir(parents=True, exist_ok=True)
             
             if dest_path.exists(): 
-                os.remove(str(video_path)) # Ya estaba en test, limpiar entrada
+                os.remove(str(video_path))
                 result['action_taken'] = 'BORRADO_DUPLICADO_TEST'
             else:
                 shutil.move(str(video_path), str(dest_path))
@@ -113,12 +114,11 @@ def process_video(video_path: Path, gpu_id: int) -> Dict:
             result['status'] = 'TERMINADO'
             return result
 
-        # PROCESO TRAIN (IA)
+        # TRAIN: IA
         os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
-        video_temp_dir = Config.TEMP_DIR / f"tmp_{video_stem}_{os.getpid()}"
+        video_temp_dir = Config.TEMP_DIR / f"tmp_{video_stem}_{gpu_id}_{os.getpid()}"
         video_temp_dir.mkdir(parents=True, exist_ok=True)
 
-        # 1. Extracción
         cmd = ['ffmpeg', '-i', str(video_path), '-vf', f'fps=1/{Config.FRAME_INTERVAL_SECONDS}', '-qscale:v', '2', '-y', str(video_temp_dir / "f_%04d.jpg")]
         subprocess.run(cmd, capture_output=True, timeout=600)
         
@@ -131,13 +131,33 @@ def process_video(video_path: Path, gpu_id: int) -> Dict:
 
             for frame_path in frame_paths:
                 results = model.predict(source=str(frame_path), conf=Config.CONFIDENCE_THRESHOLD, verbose=False)
+                
                 if len(results) > 0 and len(results[0].boxes) > 0:
-                    output_name = f"{date_str}_{video_stem}_{frame_path.stem}.jpg"
-                    shutil.copy2(frame_path, Config.OUTPUT_DIR / 'train' / 'images' / output_name)
+                    # LÓGICA DE EXCLUSIÓN DE HUMANOS
+                    keep_frame = False
+                    for box in results[0].boxes:
+                        cls_id = int(box.cls[0])
+                        cls_name = Config.TARGET_CLASSES[cls_id]
+                        
+                        # Si detectamos una de las clases de ganado, marcamos para guardar
+                        if cls_name in Config.CATTLE_CLASSES:
+                            keep_frame = True
+                        
+                        # Si detectamos una persona, evaluamos si descartar
+                        # Regla: Si hay una persona presente con alta confianza, 
+                        # solemos descartar para evitar falsos positivos de ganado
+                        if cls_name == "person" and float(box.conf[0]) > 0.5:
+                            keep_frame = False
+                            break # Prioridad absoluta al humano (limpieza)
+
+                    if keep_frame:
+                        output_name = f"{date_str}_{video_stem}_{frame_path.stem}.jpg"
+                        shutil.copy2(frame_path, Config.OUTPUT_DIR / 'train' / 'images' / output_name)
+                
                 frame_path.unlink()
 
             shutil.rmtree(video_temp_dir)
-            os.remove(str(video_path)) # Limpieza de entrada
+            os.remove(str(video_path))
             result['status'] = 'TERMINADO'
             result['action_taken'] = 'CURADO_Y_BORRADO'
         else:
@@ -152,34 +172,31 @@ def process_video(video_path: Path, gpu_id: int) -> Dict:
 # ======================== MAIN ================================================
 
 def main():
-    # Setup de carpetas
     for d in [Config.OUTPUT_DIR / 'train' / 'images', Config.OUTPUT_DIR / 'test' / 'videos', Config.TEMP_DIR, Config.LOG_DIR]:
         d.mkdir(parents=True, exist_ok=True)
 
     all_videos = sorted(list(Config.INPUT_DIR.rglob("*.dav")))
     if not all_videos:
-        print("✅ No hay videos pendientes en datosCrudos.")
+        print("✅ No hay videos pendientes.")
         return
 
     registry = load_registry()
     to_process = []
     
-    print("🔍 Analizando bitácora y limpiando duplicados...")
     for v in all_videos:
         v_name = v.stem.replace(' ', '_')
         v_date = get_video_date(v)
-        
-        if is_already_processed(v_name, v_date, registry):
-            try: os.remove(str(v))
-            except: pass
-        else:
+        if not is_already_processed(v_name, v_date, registry):
             to_process.append(v)
+        else:
+            try: os.remove(str(v)) # Limpieza de duplicados ya registrados
+            except: pass
 
     if not to_process:
-        print("✅ Todo el contenido de datosCrudos ya estaba procesado. Carpeta vaciada.")
+        print("✅ Carpeta datosCrudos vacía.")
         return
 
-    print(f"🚀 Iniciando procesamiento Multi-GPU de {len(to_process)} videos...")
+    print(f"🚀 Iniciando Pipeline con Exclusión de Humanos ({len(to_process)} videos)...")
 
     try:
         cmd_gpu = "nvidia-smi --query-gpu=index,memory.free --format=csv,nounits,noheader"
@@ -194,14 +211,12 @@ def main():
 
         for future in tqdm(as_completed(futures), total=len(futures), desc="Vaciando datosCrudos"):
             res = future.result()
-            # Actualizar registro inmediatamente para no perder progreso si hay un corte
             df_current = load_registry()
             df_current = pd.concat([df_current, pd.DataFrame([res])], ignore_index=True)
             df_current.to_csv(Config.REGISTRY_FILE, index=False)
 
-    # Limpiar carpetas vacías
     subprocess.run(f"find {Config.INPUT_DIR} -type d -empty -delete", shell=True)
-    print(f"✅ ¡Proceso completado! Bitácora en: {Config.REGISTRY_FILE}")
+    print(f"✅ ¡Proceso completado! Dataset libre de humanos (aprox).")
 
 if __name__ == "__main__":
     main()
