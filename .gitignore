@@ -1,0 +1,18 @@
+# Datos y Videos (Pesados)
+datosCrudos/
+dataset_curado/
+frames_temp/
+verificacion_manual/
+
+# Modelos IA
+*.pt
+*.pth
+
+# Python y Logs
+__pycache__/
+*.log
+logs/
+.ipynb_checkpoints/
+
+# Bitácoras de datos
+registro_procesamiento.csv
