@@ -1,0 +1,306 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║         🐄 SISTEMA DE CURADURÍA AUTOMATIZADA - DETECCIÓN DE GANADO 🐄    ║
+║                                                                          ║
+║              Pipeline con YOLO-World v2 para Tesis de Maestría          ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+📅 FECHA DE CREACIÓN: 4 de Febrero de 2026
+🏢 SERVIDOR: Cratos (Ubuntu 20.04)
+👤 USUARIO: vacas
+📊 TECNOLOGÍA: YOLO-World v2 + ffmpeg + Python 3.10
+
+================================================================================
+📂 ARCHIVOS IMPORTANTES (Lee en este orden)
+================================================================================
+
+1️⃣  LEEME_PRIMERO.txt              ← ESTÁS AQUÍ (Resumen ejecutivo)
+2️⃣  INSTALACION_COMANDOS.txt       ← Comandos para copiar/pegar
+3️⃣  QUICKSTART.md                  ← Guía rápida (5 minutos)
+4️⃣  README.md                      ← Documentación completa
+5️⃣  CONFIGURACIONES_AVANZADAS.md   ← Casos de uso especiales
+
+================================================================================
+🎯 ¿QUÉ HACE ESTE SISTEMA?
+================================================================================
+
+Este pipeline automatizado:
+
+✅ Lee videos .dav de cámaras de seguridad DVR
+✅ Extrae 1 frame cada 3 segundos (configurable)
+✅ Usa inteligencia artificial (YOLO-World v2) para detectar vacas
+✅ Guarda SOLO las imágenes donde detecta ganado (conf > 0.4)
+✅ Descarta imágenes vacías (ahorra ~95% de espacio)
+✅ Genera reportes detallados en JSON y CSV
+
+🎯 RESULTADO: Dataset curado listo para análisis de moscas
+
+================================================================================
+⚡ INICIO RÁPIDO (3 Pasos)
+================================================================================
+
+PASO 1: Instalar (primera vez, ~10 minutos)
+───────────────────────────────────────────────────────────────────────────
+cd /data/estudiantes/vacas
+bash setup_entorno.sh
+
+PASO 2: Activar entorno (SIEMPRE al abrir terminal)
+───────────────────────────────────────────────────────────────────────────
+conda activate tesis_vacas
+
+PASO 3: Ejecutar
+───────────────────────────────────────────────────────────────────────────
+python pipeline_curaduria.py
+
+¡Listo! El pipeline procesará todos los videos en datosCrudos/
+
+================================================================================
+📋 CHECKLIST ANTES DE EMPEZAR
+================================================================================
+
+Verifica que tienes:
+
+[ ] Acceso SSH al servidor Cratos
+[ ] Anaconda/Miniconda instalado (verifica: conda --version)
+[ ] Videos .dav en alguna ubicación accesible
+[ ] Al menos 50GB de espacio libre en disco
+[ ] Opcional: GPU NVIDIA con CUDA (para velocidad 10-20x)
+
+Si falta algo, lee README.md sección "Requisitos"
+
+================================================================================
+📊 ¿CUÁNTO TIEMPO TOMARÁ?
+================================================================================
+
+Instalación:        ~10 minutos (una sola vez)
+Test (1 video):     ~2-5 minutos
+Processing:         Depende de tu hardware...
+
+Con GPU (RTX 3090/4090):
+  • 1 hora de video  → ~2-3 minutos
+  • 10 horas         → ~30 minutos
+  • 100 horas        → ~5 horas
+
+Con CPU (16 cores):
+  • 1 hora de video  → ~20-30 minutos
+  • 10 horas         → ~5 horas
+  • 100 horas        → ~2 días
+
+💡 Tip: Ejecuta en modo background (nohup) para datasets grandes
+
+================================================================================
+🚀 COMANDOS MÁS IMPORTANTES
+================================================================================
+
+# Instalar todo
+bash setup_entorno.sh
+
+# Activar entorno (hacer SIEMPRE)
+conda activate tesis_vacas
+
+# Verificar instalación
+python verificar_entorno.py
+
+# Test con un video
+python test_single_video.py datosCrudos/tu_video.dav
+
+# Ejecutar pipeline completo
+python pipeline_curaduria.py
+
+# Ejecutar en background (recomendado)
+nohup python pipeline_curaduria.py > logs/run.log 2>&1 &
+tail -f logs/run.log
+
+# Ver resultados
+ls -lh dataset_curado/
+cat logs/*.csv
+
+================================================================================
+📁 ESTRUCTURA DE DIRECTORIOS
+================================================================================
+
+/data/estudiantes/vacas/
+│
+├── 📄 LEEME_PRIMERO.txt              ← Estás aquí
+├── 📄 INSTALACION_COMANDOS.txt       ← Comandos completos
+├── 📄 QUICKSTART.md                  ← Guía de 5 minutos
+├── 📄 README.md                      ← Documentación completa
+├── 📄 CONFIGURACIONES_AVANZADAS.md   ← Configuraciones especiales
+│
+├── 🐍 pipeline_curaduria.py          ← SCRIPT PRINCIPAL ⭐
+├── 🐍 test_single_video.py           ← Test con un video
+├── 🐍 verificar_entorno.py           ← Verificación de dependencias
+├── 🔧 setup_entorno.sh               ← Instalación automatizada
+│
+├── 📂 datosCrudos/                   ← Copiar tus videos .dav AQUÍ
+├── 📂 dataset_curado/                ← OUTPUT: Frames con vacas
+├── 📂 frames_temp/                   ← Temporal (auto-limpieza)
+└── 📂 logs/                          ← Reportes JSON/CSV
+
+================================================================================
+⚙️ CONFIGURACIÓN BÁSICA
+================================================================================
+
+Para ajustar parámetros, edita: pipeline_curaduria.py (líneas 30-54)
+
+Parámetros clave:
+
+• FRAME_INTERVAL_SECONDS = 3          [Frames por segundo a extraer]
+  → Bajar a 2 para MÁS frames (más lento, más completo)
+  → Subir a 5 para MENOS frames (más rápido, menos datos)
+
+• CONFIDENCE_THRESHOLD = 0.4          [Umbral de confianza del modelo]
+  → Bajar a 0.3 si NO detecta vacas
+  → Subir a 0.5-0.6 para MENOS falsos positivos
+
+• MODEL_NAME = "yolov8l-worldv2.pt"  [Tamaño del modelo]
+  → "yolov8m-worldv2.pt" = Más RÁPIDO (menos preciso)
+  → "yolov8x-worldv2.pt" = Más PRECISO (más lento)
+
+• USE_GPU = True                      [Usar GPU o CPU]
+  → False si no tienes GPU NVIDIA
+
+================================================================================
+🎓 PARA TU TESIS
+================================================================================
+
+Este sistema implementa técnicas de:
+
+✓ Automated Data Curation (Curaduría Automatizada)
+✓ Open Vocabulary Object Detection (Detección sin reentrenamiento)
+✓ Zero-Shot Learning (Modelo sin fine-tuning)
+✓ Temporal Sampling (Muestreo inteligente de frames)
+
+Modelo: YOLO-World v2 (CVPR 2024)
+Paper: https://arxiv.org/abs/2401.17270
+
+Métricas a reportar:
+  • Precision, Recall, F1-Score (requiere anotación manual de muestra)
+  • Velocidad de procesamiento (frames/segundo)
+  • Tasa de detección (% frames con ganado)
+  • Ahorro de almacenamiento vs extracción completa
+
+================================================================================
+🐛 PROBLEMAS COMUNES Y SOLUCIONES
+================================================================================
+
+❌ "conda: command not found"
+   Solución: source ~/anaconda3/bin/activate
+
+❌ "ffmpeg not found"
+   Solución: conda install -c conda-forge ffmpeg
+
+❌ "CUDA out of memory"
+   Solución: Editar pipeline_curaduria.py → USE_GPU = False
+
+❌ "No se detectan vacas"
+   Solución: Editar pipeline_curaduria.py → CONFIDENCE_THRESHOLD = 0.3
+
+❌ "Pipeline muy lento"
+   Solución: Editar pipeline_curaduria.py → MODEL_NAME = "yolov8m-worldv2.pt"
+
+❌ "Permission denied"
+   Solución: chmod -R u+w /data/estudiantes/vacas
+
+Para más detalles: cat README.md | grep -A 10 "Troubleshooting"
+
+================================================================================
+📞 AYUDA Y SOPORTE
+================================================================================
+
+Documentación Local:
+  • Comandos completos:    cat INSTALACION_COMANDOS.txt
+  • Guía rápida:           cat QUICKSTART.md
+  • Manual completo:       cat README.md
+  • Configuraciones:       cat CONFIGURACIONES_AVANZADAS.md
+
+Verificación:
+  • Estado del sistema:    python verificar_entorno.py
+  • Ver logs:              tail -n 50 logs/*.log
+  • Espacio en disco:      df -h /data/estudiantes/vacas
+
+Comunidad:
+  • Ultralytics Docs:      https://docs.ultralytics.com
+  • YOLO-World:            https://github.com/ultralytics/ultralytics
+  • Issues:                GitHub Ultralytics Issues
+
+================================================================================
+✅ VERIFICACIÓN RÁPIDA
+================================================================================
+
+Ejecuta estos comandos para verificar que todo está OK:
+
+conda activate tesis_vacas && python verificar_entorno.py
+
+Si ves todo con ✅, estás listo para empezar.
+Si hay ❌, sigue las instrucciones que muestra el script.
+
+================================================================================
+🚦 PRÓXIMOS PASOS
+================================================================================
+
+1. Si aún no instalaste:
+   → bash setup_entorno.sh
+
+2. Si ya instalaste:
+   → conda activate tesis_vacas
+   → python verificar_entorno.py
+   → python test_single_video.py datosCrudos/tu_video.dav
+
+3. Si el test funciona:
+   → python pipeline_curaduria.py
+
+4. Si tienes muchos videos:
+   → nohup python pipeline_curaduria.py > logs/run.log 2>&1 &
+   → tail -f logs/run.log
+
+================================================================================
+📚 ORDEN DE LECTURA RECOMENDADO
+================================================================================
+
+Principiante → Lee en este orden:
+  1. LEEME_PRIMERO.txt (este archivo)
+  2. INSTALACION_COMANDOS.txt
+  3. QUICKSTART.md
+
+Usuario Avanzado → Además de lo anterior:
+  4. README.md (documentación completa)
+  5. CONFIGURACIONES_AVANZADAS.md (casos especiales)
+
+Para Tesis → Todo lo anterior + revisar el código:
+  6. pipeline_curaduria.py (código fuente comentado)
+  7. Papers referenciados en README.md
+
+================================================================================
+💡 TIPS FINALES
+================================================================================
+
+✓ SIEMPRE ejecuta "conda activate tesis_vacas" al abrir terminal
+✓ Haz un TEST con 1 video antes de procesar todo el dataset
+✓ Revisa los logs CSV para estadísticas rápidas
+✓ Usa modo background (nohup) para datasets grandes
+✓ Monitorea espacio en disco periódicamente
+✓ Valida manualmente una muestra de 100 frames para tu tesis
+✓ Haz backup de logs/ (contienen metadata importante)
+
+================================================================================
+🎯 OBJETIVO FINAL
+================================================================================
+
+Input:   Cientos de horas de video .dav de cámaras de seguridad
+         ↓
+Process: Extracción inteligente + Detección con IA
+         ↓
+Output:  Dataset curado con SOLO frames donde aparecen vacas
+         + Logs con metadata (confianza, coordenadas, etc.)
+         ↓
+Uso:     Segunda fase: Detección y conteo de moscas en el ganado
+
+================================================================================
+
+🐄 ¡Todo listo! Comienza con: bash setup_entorno.sh 🐄
+
+Para dudas, lee: QUICKSTART.md o README.md
+
+================================================================================

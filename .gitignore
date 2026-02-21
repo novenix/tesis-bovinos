@@ -16,3 +16,10 @@ logs/
 
 # Bitácoras de datos
 registro_procesamiento.csv
+
+# Dataset y Salidas de Entrenamiento
+dataset_final_yolo/
+runs/
+verificacion_*/
+sam3/
+

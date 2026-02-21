@@ -1,0 +1,322 @@
+================================================================================
+🚀 COMANDOS DE INSTALACIÓN - COPIAR Y PEGAR EN TERMINAL
+================================================================================
+
+Este archivo contiene todos los comandos necesarios para instalar y ejecutar
+el pipeline. Copia y pega cada bloque en tu terminal del servidor Cratos.
+
+================================================================================
+PASO 1: INSTALACIÓN AUTOMATIZADA (Recomendado)
+================================================================================
+
+cd /data/estudiantes/vacas
+bash setup_entorno.sh
+
+# El script instalará todo automáticamente. Toma ~5-10 minutos.
+# Si hay errores, pasa al PASO 1B (instalación manual).
+
+================================================================================
+PASO 1B: INSTALACIÓN MANUAL (Si el script automático falla)
+================================================================================
+
+# 1. Crear entorno conda
+conda create -n tesis_vacas python=3.10 -y
+
+# 2. Activar entorno
+conda activate tesis_vacas
+
+# 3. Instalar ffmpeg
+conda install -c conda-forge ffmpeg -y
+
+# 4. Instalar paquetes de Python
+pip install ultralytics==8.1.24
+pip install opencv-python-headless
+pip install tqdm pandas Pillow
+
+# 5. Verificar instalación
+cd /data/estudiantes/vacas
+python verificar_entorno.py
+
+================================================================================
+PASO 2: PREPARAR DATOS
+================================================================================
+
+# Copiar tus videos .dav al directorio correcto
+# (Ajusta la ruta origen según donde estén tus videos)
+
+cp /ruta/origen/tus_videos/*.dav /data/estudiantes/vacas/datosCrudos/
+
+# Verificar que se copiaron
+ls -lh /data/estudiantes/vacas/datosCrudos/
+
+# Contar cuántos videos tienes
+ls /data/estudiantes/vacas/datosCrudos/*.dav | wc -l
+
+================================================================================
+PASO 3: TEST RÁPIDO (MUY RECOMENDADO)
+================================================================================
+
+# IMPORTANTE: Siempre activar el entorno primero
+conda activate tesis_vacas
+
+# Ir al directorio del proyecto
+cd /data/estudiantes/vacas
+
+# Listar videos disponibles
+ls datosCrudos/*.dav
+
+# Testear con el primer video (ajusta el nombre)
+python test_single_video.py datosCrudos/[NOMBRE_DE_TU_VIDEO].dav
+
+# Ejemplo:
+# python test_single_video.py datosCrudos/camara1_20240101.dav
+
+# Revisar resultados del test
+ls -lh dataset_curado/*test*
+
+================================================================================
+PASO 4: EJECUTAR PIPELINE COMPLETO
+================================================================================
+
+# Opción A: Modo normal (terminal activa, ves progreso en tiempo real)
+conda activate tesis_vacas
+cd /data/estudiantes/vacas
+python pipeline_curaduria.py
+
+
+# Opción B: Modo background (recomendado para datasets grandes)
+conda activate tesis_vacas
+cd /data/estudiantes/vacas
+nohup python pipeline_curaduria.py > logs/pipeline_$(date +%Y%m%d_%H%M%S).log 2>&1 &
+
+# Ver progreso en tiempo real
+tail -f logs/pipeline_*.log
+
+# O monitorear frames guardados
+watch -n 10 'echo "Frames guardados: $(ls dataset_curado/*.jpg 2>/dev/null | wc -l)"'
+
+# Ver PID del proceso (para detener si es necesario)
+ps aux | grep pipeline_curaduria
+
+# Detener proceso (solo si es necesario)
+# kill [PID]
+
+================================================================================
+PASO 5: VERIFICAR RESULTADOS
+================================================================================
+
+# Activar entorno
+conda activate tesis_vacas
+cd /data/estudiantes/vacas
+
+# Contar frames guardados
+ls dataset_curado/*.jpg | wc -l
+
+# Ver tamaño del dataset
+du -sh dataset_curado/
+
+# Ver estadísticas en CSV
+cat logs/*.csv
+
+# Ver primeros frames guardados
+ls dataset_curado/*.jpg | head -n 10
+
+# Copiar muestra a tu máquina local (desde tu laptop, no en el servidor)
+# scp tu_usuario@cratos:/data/estudiantes/vacas/dataset_curado/*.jpg ~/Desktop/muestra/
+
+================================================================================
+COMANDOS DE MONITOREO (Durante Ejecución)
+================================================================================
+
+# Terminal 1: Ver log en tiempo real
+tail -f logs/pipeline_*.log
+
+# Terminal 2: Contar frames cada 10 segundos
+watch -n 10 'ls dataset_curado/*.jpg 2>/dev/null | wc -l'
+
+# Terminal 3: Monitorear GPU (si aplica)
+watch -n 2 nvidia-smi
+
+# Terminal 4: Verificar espacio en disco
+watch -n 30 'df -h /data/estudiantes/vacas'
+
+# Ver memoria RAM usada
+free -h
+
+# Ver uso de CPU
+htop
+
+================================================================================
+AJUSTAR CONFIGURACIÓN (Si es necesario)
+================================================================================
+
+# Editar parámetros del pipeline
+nano /data/estudiantes/vacas/pipeline_curaduria.py
+
+# Parámetros clave a modificar (líneas 30-54):
+#
+# Línea 40: FRAME_INTERVAL_SECONDS = 3
+#   → Cambiar a 2 para más frames
+#   → Cambiar a 5 para menos frames (más rápido)
+#
+# Línea 44: CONFIDENCE_THRESHOLD = 0.4
+#   → Bajar a 0.3 si no detecta vacas
+#   → Subir a 0.5-0.6 para menos falsos positivos
+#
+# Línea 43: MODEL_NAME = "yolov8l-worldv2.pt"
+#   → Cambiar a "yolov8m-worldv2.pt" para más velocidad
+#   → Cambiar a "yolov8x-worldv2.pt" para más precisión
+#
+# Línea 50: USE_GPU = True
+#   → Cambiar a False si no hay GPU o da error de CUDA
+
+# Después de editar, guardar con: Ctrl+O, Enter, Ctrl+X
+
+# Volver a ejecutar
+python pipeline_curaduria.py
+
+================================================================================
+COMANDOS DE TROUBLESHOOTING
+================================================================================
+
+# Verificar entorno completo
+python verificar_entorno.py
+
+# Ver versión de Python
+python --version
+
+# Ver si conda está activado
+echo $CONDA_DEFAULT_ENV
+
+# Activar conda manualmente (si no funciona el comando normal)
+source ~/anaconda3/bin/activate
+conda activate tesis_vacas
+
+# Verificar ffmpeg
+ffmpeg -version
+
+# Verificar ultralytics
+python -c "import ultralytics; print(ultralytics.__version__)"
+
+# Verificar GPU/CUDA
+python -c "import torch; print(f'CUDA disponible: {torch.cuda.is_available()}')"
+
+# Ver logs de errores
+tail -n 100 logs/*.log
+
+# Limpiar frames temporales (si ocupan mucho espacio)
+rm -f /data/estudiantes/vacas/frames_temp/*.jpg
+
+# Ver espacio disponible
+df -h /data/estudiantes/vacas
+
+# Ver archivos más grandes
+du -h /data/estudiantes/vacas/* | sort -rh | head -n 10
+
+================================================================================
+COMANDOS DE LIMPIEZA (Después de Terminar)
+================================================================================
+
+# Limpiar frames temporales
+rm -f frames_temp/*.jpg
+
+# Comprimir logs para backup
+tar -czf logs_backup_$(date +%Y%m%d).tar.gz logs/*.json logs/*.csv
+
+# Copiar dataset a ubicación final (ajusta ruta)
+cp -r dataset_curado /ruta/destino/dataset_vacas_final
+
+# Desactivar entorno conda
+conda deactivate
+
+================================================================================
+COMANDOS ÚTILES PARA LA TESIS
+================================================================================
+
+# Generar estadísticas globales
+python << 'EOF'
+import pandas as pd
+import glob
+
+# Cargar todos los CSVs de logs
+csv_files = glob.glob('logs/*.csv')
+if csv_files:
+    df = pd.read_csv(csv_files[0])
+    print(f"\n📊 ESTADÍSTICAS GLOBALES:")
+    print(f"   Total videos procesados: {len(df)}")
+    print(f"   Total frames analizados: {df['total_frames'].sum()}")
+    print(f"   Total frames con ganado: {df['frames_con_ganado'].sum()}")
+    print(f"   Total frames guardados: {df['frames_guardados'].sum()}")
+    print(f"   Tasa detección promedio: {df['frames_con_ganado'].sum()/df['total_frames'].sum()*100:.2f}%")
+else:
+    print("No hay logs CSV disponibles aún")
+EOF
+
+# Crear muestra aleatoria para validación manual
+mkdir -p validacion_manual
+ls dataset_curado/*.jpg | shuf -n 100 | xargs -I {} cp {} validacion_manual/
+
+# Contar detecciones por video (requiere log JSON)
+python << 'EOF'
+import json
+import glob
+
+json_files = glob.glob('logs/*.json')
+if json_files:
+    with open(json_files[0]) as f:
+        data = json.load(f)
+
+    print("\n📹 DETECCIONES POR VIDEO:")
+    for video in data[:10]:  # Primeros 10
+        print(f"   {video['video_name']}: "
+              f"{video['frames_with_cattle']}/{video['total_frames']} "
+              f"({video['frames_with_cattle']/video['total_frames']*100:.1f}%)")
+EOF
+
+================================================================================
+DOCUMENTACIÓN DISPONIBLE
+================================================================================
+
+# Ver guía de inicio rápido
+cat QUICKSTART.md
+
+# Ver documentación completa
+cat README.md
+
+# Ver configuraciones avanzadas
+cat CONFIGURACIONES_AVANZADAS.md
+
+# Ver este archivo
+cat INSTALACION_COMANDOS.txt
+
+================================================================================
+RESUMEN: FLUJO COMPLETO EN 6 COMANDOS
+================================================================================
+
+# 1. Instalar
+bash setup_entorno.sh
+
+# 2. Activar entorno (SIEMPRE hacer esto al abrir terminal)
+conda activate tesis_vacas
+
+# 3. Verificar
+python verificar_entorno.py
+
+# 4. Test
+python test_single_video.py datosCrudos/tu_video.dav
+
+# 5. Ejecutar completo (background)
+nohup python pipeline_curaduria.py > logs/run.log 2>&1 &
+
+# 6. Monitorear
+tail -f logs/run.log
+
+================================================================================
+
+✅ Con estos comandos tienes todo lo necesario para ejecutar el pipeline.
+
+📚 Para más detalles, lee: QUICKSTART.md y README.md
+
+🐄 ¡Buena suerte con tu tesis!
+
+================================================================================

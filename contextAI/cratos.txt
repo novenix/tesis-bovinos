@@ -1,0 +1,384 @@
+Instrucciones de Uso Servidor Cratos Realizado por Francisco Carlos Calderon B calderonf@javeriana.edu.co
+
+Versión:3.1
+
+Fecha: 9 de marzo 2022
+
+Datos importantes:
+
+POR FAVOR LEA TODA LA GUIA ANTES DE ENTRAR AL SERVIDOR
+
+>>>>IP: ->10.34.1.43<<-
+
+>>>>ALIAS mnemotécnico : ->cratos o cratos.javeriana.edu.co<<-
+
+
+Puertos: se usan los de por defecto del protocolo:
+
+Puerto ssh: por defecto 22
+
+Puerto RDP: por defecto 3389
+
+Puerto scp/sftp: por defecto 22
+
+Versión de Ubuntu: 20.04 Kernel 5.4.0-100-generic
+
+Cuando ya se encuentre autenticado en la cratos puede obtener una lista de los paquetes instalados así:
+
+$apt list –installed1
+
+Si la quiere guardar en un archivo puede usar:
+
+$apt list --installed >> paquetes.info
+
+Si la quiere filtrada por una palabra clave digamos “cuda”
+
+$apt list --installed |grep cuda
+
+Si la quiere filtrada por una palabra clave digamos “gcc” y guardar la búsqueda en un archivo gcc.info:
+
+$apt list --installed |grep gcc >> gcc.info
+
+
+Si está leyendo esta guía se asume que conoce su nombre de usuario o le va a ser asignado próximamente, para los ejemplos será “usuario”.
+
+Aplicaciones útiles:
+
+Windows:
+
+Utilidades de consola y transferencia de archivos:
+
+El acceso remoto está probado por consola ssh en windows 10 y 11. En otras versiones anteriores (xp, vista, 7, 8). Se recomienda usar putty puede descargarlo en: https://www.putty.org/
+
+
+También puede usar powerShell con ssh.exe y scp.exe Para subir y bajar datos al servidor puede usar Filezilla (https://filezilla-project.org/) o Winscp (https://winscp.net/eng/download.php) el servidor tiene implementado ssh, scp y sftp. Todo probado y funcional en los puertos por defecto “22”.
+
+
+Utilidades de GUI:
+
+Cratos soporta escritorio remoto por rdp por lo que el cliente de escritorio remoto de windows que viene por defecto en la instalacion debería funcionar sin problemas, lo ideal es que configure en avanzados una resolución no muy alta si su pantalla tiene más de 1920X1080, monitores de más de eso es probable que requieran mucho ancho de banda y se vea muy lento, no cambie estas opciones o se abrirán varias máquinas remotas.
+
+
+Linux y Windows:
+
+Utilidades de consola y transferencia de archivos:
+
+El acceso remoto está probado por consola ssh y consola cmd de windows puede accesarlo con facilidad abriendo cualquier consola bash en su sistema y tecleando:
+
+$ssh usuario@ip_de_cratos
+
+Para subir y bajar datos al servidor puede usar Filezilla (o en Windows descargarlo directamente en https://filezilla-project.org/) (se instala desde repo en su PC local con el comando $sudo apt install filezilla)
+
+Sin embargo, si desea puede hacerlo también desde consola así:
+
+$scp “/ruta/al/archivo/local/nombre.ext” usuario@ip_de_cratos:”/ruta/archivo/destino/remoto/nombre.ext”
+
+NOTA: no hay espacio entre los: después de la ip y antes de la ruta.
+
+Y si quiere descargar un archivo de la maquina remota basta con usar el comando en orden inverso:
+
+$scp usuario@ ip_de_cratos:”/ruta/archivo/destino/remoto/nombre.ext” “/ruta/al/archivo/local/nombre.ext”
+
+NOTA: no hay espacio entre los : después de la ip y antes de la ruta.
+
+Sea cuidadoso con los espacios y las rutas globales y locales, por defecto la ruta global en ssh es la carpeta home del usuario local “/home/usuario” sin embargo como veremos después en este manual, se le asignará un disco duro de trabajo diferente, ya que el recurso más preciado de nuestro servidor es el disco.
+
+Utilidades de GUI:
+
+Cratos soporta escritorio remoto por rdp en linux la opción preferida es remmina (https://remmina.org/) se instala con el comando $sudo apt install remina, se recomienda configurar con las opciones de remmina para una resolución de pantalla adecuada a su máquina local y quedarse con esa siempre, no cambie estas opciones o se abrirán varias máquinas remotas.
+
+
+Mac:
+
+Utilidades de consola y transferencia de archivos:
+
+El acceso remoto está probado por consola ssh puede accesarlo con facilidad abriendo la terminal de bash en su sistema y tecleando:
+
+$ssh usuario@ ip_de_cratos
+
+En macosX la aplicación para transferencia de archivos es por preferencia cyberduck (https://cyberduck.io/).
+
+Sin embargo si desea puede hacerlo también desde consola así:
+
+$scp “/ruta/al/archivo/local/nombre.ext” usuario@ ip_de_cratos:”/ruta/archivo/destino/remoto/nombre.ext”
+
+NOTA: no hay espacio entre los : después de la ip y antes de la ruta.
+
+Y si quiere descargar un archivo de la maquina remota basta con usar el comando en orden inverso:
+
+$scp usuario@10.34.1.43:”/ruta/archivo/destino/remoto/nombre.ext” “/ruta/al/archivo/local/nombre.ext”
+
+NOTA: no hay espacio entre los : después de la ip y antes de la ruta.
+
+Sea cuidadoso con los espacios y las rutas globales y locales, por defecto la ruta global en ssh es la carpeta home del usuario local “/home/usuario”
+
+Utilidades de GUI:
+
+Se puede usar Microsoft Remote Desktop que es gratuito para su uso y puede descargarse desde: (https://apps.apple.com/us/app/microsoft-remote-desktop/id1295203466?mt=12 ) puede que exista una versión más reciente. Si esto pasa por favor reportar al chat de teams del administrador de la máquina (calderonf)
+
+Acceso por VPN: Por favor solicite el acceso calderonf@javeriana.edu.co. Un video instructivo del acceso lo encuentra en: https://www.dropbox.com/s/3qrt25msz7asyew/Ejemplo%20Acceso%20Cratos%20VPN%20usando%20ssh%20y%20rdp.mp4?dl=0
+
+
+bug en cratos no pueden abrir navegadores u otras aplicaciones con GUI.
+
+Por favor abrir una terminal y poner
+
+export XAUTHORITY=~/.Xauthority
+
+y ahí si llamar en la misma terminal a firefox o chrome-desktop
+
+Si lo quieren hacer permanente ponerlo al final del archivo llamado .bashrc en su carpeta home
+
+
+Cuidados y consideraciones con el servidor:
+
+
+Nunca apagar o reiniciar el servidor, por ahora ya se encuentra bloqueado el acceso al apagado general del sistema, y ustedes como usuarios NO pueden apagarlo ni reiniciarlo sin antes tener una confirmación sin embargo todavía es posible saltarse estos pasos usando huecos en el SO y puede que si lo desean e intentan con insistencia puedan apagar o reiniciar el servidor, por favor no hacerlo. Sobra decir que si lo hacen pueden interrumpir el trabajo de otros usuarios de la máquina.
+
+Importante:
+
+En la carpeta ubicada es la raíz del disco "/data/estudiantes/su_usuario" pueden guardar sus datos más pesados o las bases de datos, por favor hagan esto ya que el disco duro ssd no es muy grande, el grande que está en "/data" es para eso, eviten subir muchas cosas a su carpeta home “/home/su_usuario”.
+
+
+Si veo que un solo usuario está acaparando a más de un 30 % del disco en /home/usuario o de procesos en cpu/gpu me veré obligado a imponer un sistema de cuotas. En este momento no lo hemos requerido. Puede ver un resumen de su uso en disco usando la aplicación filelight.
+
+
+Para medir cuantos recursos van a usar en sus programas, debe hacer uso del comando $htop para ver recursos en procesadores disponibles, y en gpu del comando $nvidia-smi
+
+; Si la maquina esta libre y su programa no va a tomar más de 12 horas ejecutando, puede hacer uso de la mitad de los recursos disponibles.
+
+
+Si la máquina se encuentra ya en uso, Por favor no usar más de 8 procesadores en sus programas, ni usar los recursos de más de 2 tarjeta gráficas.
+
+
+El pasword le fue suministrado por correo o en teams al ser una máquina en la intranet de la universidad es bastante segura, sin embargo, no la use para realizar transacciones bancarias, puede usarla para almacenar sus cuentas de correo en el navegador ya que esta información la cifra automáticamente firefox.
+
+
+Si no se acuerda de su password y desea resetear su password por favor solicítelo a calderonf@javeriana.edu.co o idealmente en el chat de teams personal a calderonf
+
+
+Por ahora solo se puede acceder desde la red interna de la universidad usando los datos al inicio del documento o usando una VPN.
+
+
+Ahora que ya leyó casi toda la guía y que inmediatamente va a cambiar su contraseña usando un acceso por terminal ssh por favor seleccione el texto al lado de >>>>> en la línea al inicio de este documento >>>>IP encerrado entre -> <- . O si tiene un documento en PDF en lugar de uno en word, cópielo y péguelo en otro editor de texto. por favor NO cambie su contraseña desde RDP o si ya entró por rdp y cambió su contraseña desde RDP deberá esperar hasta el próximo reinicio para usar rdp de nuevo lo cual pasa mas o menos 1 vez cada semestre.
+
+
+Consejos muy útiles:
+
+
+Manejo y distribución de multiples GPUs con el servidor:
+
+La principal característica del servidor cratos es su gran poder de procesamiento de tarjetas de video.
+
+Como ya se mencionó puede hacer uso del comando $nvidia-smi. Para listar el recurso disponible de tarjetas en la máquina.
+
+$htop
+
+
+Por defecto la tarjeta que usa una aplicación será la #0 que esta listada en la parte izquierda superior de cada fila de la tabla en la captura de pantalla anterior.
+
+
+Para hacer uso de una GPU diferente como en la figura, que se está ejecutando el proceso “./darknet” en la GPU #3, se deberán realizar estos simples pasos:
+
+
+1. Cambie la variable de entorno CUDA_VISIBLE_DEVICES a un valor entre 0 y 7, ya que solamente “ ” tenemos 8 GPUS
+
+2. Ya habiendo cambiado la variable de entorno por ejemplo escribiendo:
+
+$export CUDA_VISIBLE_DEVICES=3
+
+Puede correr en esa terminal por defecto en la GPU deseada.
+
+3. Tenga en cuenta que si cierra la terminal ya no va a tener acceso a la GPU que había configurado sino a la configuración por defecto.
+
+4. Para cambiar el comportamiento de todas las terminales que abre de aquí en adelante. Agregue la variable de entorno en cuestión al archivo .bashrc así:
+
+Si está usando entorno gráfico:
+
+$ cd
+
+Y a continuación una de las dos opciones:
+
+$pluma .bashrc #esto abre el editor por defecto de MATE que se llama pluma
+
+O en su defecto si esta usando ssh:
+
+$nano .bashrc
+
+Y agregue al final del archivo sin eliminar ni cambiar nada, la siguiente línea:
+
+export CUDA_VISIBLE_DEVICES=3,4,5
+
+por ejemplo, si quiere usar las gpus 3, 4, y 5. Guarden el archivo y listo
+
+5. Ya con esto todas las consolas de su usuario que abran de aquí en adelante tendrán por defecto visibles las GPUS que estén configuradas.
+
+6. 2,3,5 es un ejemplo, use otras, usualmente les digo por correo cuales 6 y 7 las estoy reservando para faculty. 4 y 5 para doctorado y estudiantes que son más de la 0 a la 3
+
+
+Uso de Matlab
+
+
+Si requiere matlab por favor solicite mediante un chat de teams a calderonf@javeriana.edu.co su vinculación al grupo matlabers si usa el comando groups puede saber a que grupos hace parte. Si no está en matlabers, no va a poder usar matlab.
+
+
+
+
+
+Uso de Anaconda en cratos
+
+Pida primero al administrador que lo incluyan en el grupo anacondaers
+
+
+Para activar el entorno base de conda en su sesión de shell actual escriba:
+
+
+$eval "$(/opt/anaconda3/bin/conda shell.YOUR_SHELL_NAME hook)"
+
+
+
+Cambie YOUR_SHELL_NAME por su shell favorito si no sabe que poner acá, ponga bash y quedaría así:
+
+
+$eval "$(/opt/anaconda3/bin/conda shell.bash hook)"
+
+
+
+Para instalar las funciones de shell de conda para un acceso más fácil, primero active su entorno con el comando anterior, luego:
+
+
+$conda init
+
+Ya cuenta con conda en su sistema, puede usarlo de acà en adelante.
+
+
+
+Instalación de paquetes en python3
+
+Los paquetes de python2 al ser ya casi depreciados, se instalarán por solicitud previa.
+
+
+Para instalar paquetes de python3 haga lo siguiente:
+
+$python3 -m pip install --user NombreDelPaquete
+
+Para desinstalar un paquete:
+
+$python3 -m pip uninstall --user NombreDelPaquete
+
+Para actualizar un paquete desinstale e instale el paquete, si requiere una versión más reciente de pip por favor enviar un correo al administrador.
+
+
+Para instalar paquetes de python3 con alguna versión en especìfico
+
+$python3 -m pip install --user NombreDelPaquete==version
+
+Para desinstalar un paquete:
+
+$python3 -m pip uninstall --user NombreDelPaquete==version
+
+Por ejemplo, para usar una versión reciente de pandas en su usuario:
+
+$python3 -m pip install --user pandas==0.24
+
+
+Nota el --user se escribe tal cual, no debe reemplazarlo por su usuario, así es literal
+
+
+
+Uso de Docker en cratos
+
+
+Para uso de Docker, pedir al administrador que su usuario sea agregado a el grupo Docker
+
+
+
+
+Gestión de trabajos en segundo plano en Unix:
+
+
+1. **Ejecutar un trabajo en segundo plano**: Agrega un ampersand (`&`) al final del comando. Ejemplo: `# find / -ctime -1 > /tmp/changed-file-list.txt &`.
+
+
+2. **Enviar un trabajo en primer plano a segundo plano**: Usa `CTRL+Z` para suspender el trabajo y luego `bg` para continuar en segundo plano.
+
+
+3. **Ver todos los trabajos en segundo plano**: Usa el comando `jobs`.
+
+
+4. **Traer un trabajo de segundo plano al primer plano**: Usa `fg`. Si tienes varios trabajos, usa `fg %numero_de_trabajo`.
+
+
+5. **Matar un trabajo específico en segundo plano**: Usa `kill %numero_de_trabajo`.
+
+
+Para más detalles y ejemplos, puedes visitar la fuente original en inglés en [The Geek Stuff](https://www.thegeekstuff.com/2010/05/unix-background-job/ )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INFORMACION DEPRECIADA:
+
+Autenticarse en una sesión RDP existente NO ESTA FUNCIONAL 100% EN NUEVA VERSION
+
+
+A veces al conectarse desde múltiples computadores o con diferentes settings la máquina crea automáticamente nuevos puertos de RDP y al conectarse ustedes se dan cuenta que no les aparecen las mismas ventanas abiertas a su usuario.
+
+
+Para poder reconectarse basta realizar los siguientes pasos:
+
+
+1. Conectarse por ssh a cratos
+
+2. Poner el siguiente comando:
+
+---Copiar desde después de la flecha--->{ echo "user pid Xdisplay port"; { ps -ef | awk '/Xvnc :[[:digit:]]+/ {print $1,$2,$9}' | while read tu tpid tvnc; do netstat -tlpn | awk -v "tpid=${tpid}" '$0 ~ tpid {print $4;}' | sed -r -e 's/^.*://;' -e "s/^/${tu} ${tpid} ${tvnc} /;" ; done ; } | sort -k3 ; } | column -c4 –t<---hasta antes de la flecha---
+
+3. Al final saldrá una tabla, por ejemplo la siguiente suponiendo un usuario llamado bgstack:
+
+user pid Xdisplay port
+
+bgstack15 5968 :32 5919
+
+4. Esto significa que el usuario tiene ya una sesión abierta a la cual conectarse en el puerto 5919. Por lo que puede abrir una nueva sesión usando su cliente de escritorio remoto favorito, dejando en blanco el campo de usuario y contraseña, y cuando salga una pantalla como la que se muestra a continuación, seleccionar de la lista desplegable del primer campo llamado “Module” la opción Reconnect, poner los datos con los que ya cuenta y dar aceptar.
+
+5. Por favor apague las sesiones con los puertos que no está usando. para esto simplemente dar click en inicio apagar como si estuviera apagando si PC, esto cierra la sesión de rdp no apaga el PC. 6. Si quiere saber más ver el link (https://bgstack15.wordpress.com/2018/01/16/list-current-xvnc-sessions-in-xrdp-so-you-can-reconnect-to-your-old-one/)

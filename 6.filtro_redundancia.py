@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+ESTE FILTRO DE REDUNDANCIA NUNCA SE APLICÓ se debe ignorar......
+
 Filtro de Redundancia Temporal - Curaduría de Datos
 ===================================================
 Analiza las imágenes en dataset_curado y elimina aquellas que son casi
