@@ -10,7 +10,7 @@ import threading
 import gc
 from datetime import datetime
 
-# --- CLASE VIGILANTE CON LIMPIEZA ACTIVA ---
+# --- CLASE VIGILANTE CON LIMPIEZA ACTIVA (COPIA FIEL DEL 14) ---
 class ResourceWatcher(threading.Thread):
     def __init__(self, log_path, interval=15):
         super().__init__()
@@ -21,7 +21,7 @@ class ResourceWatcher(threading.Thread):
 
     def run(self):
         with open(self.log_path, "a") as f:
-            f.write(f"\n--- MONITOREO COLA INTELIGENTE {datetime.now()} ---\n")
+            f.write(f"\n--- INICIO MONITOREO COLA INTELIGENTE V15 {datetime.now()} ---\n")
             f.write("Timestamp | System_Used(GB) | Free(GB) | Proc_RAM(GB)\n")
             process = psutil.Process(os.getpid())
             while not self.stop_event.is_set():
@@ -43,48 +43,40 @@ class ResourceWatcher(threading.Thread):
                 time.sleep(self.interval)
 
 def main():
-    parser = argparse.ArgumentParser(description="Entrenamiento YOLOv11 - COLA INTELIGENTE")
-    parser.add_argument("--gpu", type=str, default="1,2,3,4")
-    parser.add_argument("--model", type=str, default="nano")
-    parser.add_argument("--resume", action="store_true")
-    args = parser.parse_args()
-
+    # Parámetros del experimento
+    dataset_yaml = "/data/estudiantes/vacas/dataset_final_yolo/dataset.yaml"
+    project_name = "tesis_bovinos_seg"
+    run_name = "entrenamiento_nano_puro_epoch1"
+    
     # Iniciar Vigilante
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
-    watcher = ResourceWatcher(log_dir / "telemetria_cola_inteligente.log")
+    log_path = log_dir / "telemetria_v15_puro.log"
+    watcher = ResourceWatcher(log_path)
     watcher.start()
 
-    dataset_yaml = "/data/estudiantes/vacas/dataset_final_yolo/dataset.yaml"
-    project_name = "tesis_bovinos_seg"
-    run_name = "entrenamiento_nano_with_gridmask_multi_gpu"
+    print("🚀 Lanzando Entrenamiento PURO (Época 1) con COLA INTELIGENTE...")
     
-    last_weights = Path(f"runs/segment/{project_name}/{run_name}/weights/last.pt")
+    # Cargar pesos originales (NADA de resume)
+    model = YOLO("yolo11n-seg.pt")
 
-    if args.resume and last_weights.exists():
-        print(f"🔄 Reanudando con COLA INTELIGENTE desde {last_weights}")
-        model = YOLO(str(last_weights))
-    else:
-        model = YOLO("yolo11n-seg.pt")
-
-    # CONFIGURACIÓN DE COLA INTELIGENTE (Mínima RAM)
+    # CONFIGURACIÓN DE COLA INTELIGENTE (Copia fiel del 14 funcional)
     train_params = {
         "data": dataset_yaml,
         "epochs": 100,
-        "batch": 64,         # 16 por GPU para evitar picos de VRAM
-        "workers": 2,        # SOLO 2 POR GPU. Esto es la "cola corta" que pediste.
+        "batch": 64,         # 16 por GPU
+        "workers": 2,        # SOLO 2 POR GPU (Cola Inteligente)
         "imgsz": 640,
-        "device": args.gpu,
+        "device": "1,2,3,4",
         "project": project_name,
         "name": run_name,
         "exist_ok": True,
         "optimizer": "AdamW",
         "augment": True,
         "erasing": 0.5,
-        "cache": False,      # Prohibido cachear en RAM fotos de 160GB
-        "resume": args.resume,
+        "cache": False,
         "plots": True,
-        "overlap_mask": True,
+        "save": True,
         "close_mosaic": 10
     }
 
@@ -92,6 +84,7 @@ def main():
         model.train(**train_params)
     finally:
         watcher.stop_event.set()
+        print("🏁 Entrenamiento finalizado o interrumpido.")
 
 if __name__ == "__main__":
     main()
