@@ -4,7 +4,7 @@ dataset_curado/
 frames_temp/
 verificacion_manual/
 
-# Modelos IA
+# Modelos IA (Mantener excluidos los .pt pesados por seguridad del repo)
 *.pt
 *.pth
 
@@ -17,9 +17,15 @@ logs/
 # Bitácoras de datos
 registro_procesamiento.csv
 
-# Dataset y Salidas de Entrenamiento
+# Dataset y Salidas de Entrenamiento (Excluyendo carpetas específicas para tesis)
 dataset_final_yolo/
 runs/
+!runs/segment/tesis_bovinos_seg/
+!runs/segment/tesis_bovinos_yolo26/
+!runs/segment/runs/segment/tesis_bovinos_seg/
+!visualizacion_tesis/
+
 verificacion_*/
 sam3/
 
+dataset_v2_simplified/
