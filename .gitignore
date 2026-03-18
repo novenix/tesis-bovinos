@@ -22,8 +22,14 @@ dataset_final_yolo/
 runs/
 !runs/segment/tesis_bovinos_seg/
 !runs/segment/tesis_bovinos_yolo26/
+!runs/segment/tesis_bovinos_medium/
 !runs/segment/runs/segment/tesis_bovinos_seg/
+!runs/segment/runs/segment/tesis_bovinos_yolo26/
+!runs/segment/runs/segment/tesis_bovinos_medium/
 !visualizacion_tesis/
+
+# Permitir resúmenes específicos en logs
+!logs/resumen_validaciones_finales.txt
 
 verificacion_*/
 sam3/

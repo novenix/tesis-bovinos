@@ -1,0 +1,12 @@
+
+--- RESULTADOS FINAL validacion_final_v16 ---
+mAP50 (Box): 0.3701
+mAP50-95 (Box): 0.2292
+mAP50 (Mask): 0.1855
+mAP50-95 (Mask): 0.0951
+
+--- RESULTADOS FINAL validacion_final_v17 ---
+mAP50 (Box): 0.4887
+mAP50-95 (Box): 0.3436
+mAP50 (Mask): 0.2461
+mAP50-95 (Mask): 0.1255
