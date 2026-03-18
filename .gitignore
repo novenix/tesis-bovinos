@@ -7,6 +7,7 @@ verificacion_manual/
 # Modelos IA (Mantener excluidos los .pt pesados por seguridad del repo)
 *.pt
 *.pth
+**/weights/
 
 # Python y Logs
 __pycache__/
@@ -17,15 +18,23 @@ logs/
 # Bitácoras de datos
 registro_procesamiento.csv
 
-# Dataset y Salidas de Entrenamiento (Excluyendo carpetas específicas para tesis)
+# Dataset y Salidas de Entrenamiento
 dataset_final_yolo/
-runs/
-!runs/segment/tesis_bovinos_seg/
-!runs/segment/tesis_bovinos_yolo26/
-!runs/segment/tesis_bovinos_medium/
-!runs/segment/runs/segment/tesis_bovinos_seg/
-!runs/segment/runs/segment/tesis_bovinos_yolo26/
-!runs/segment/runs/segment/tesis_bovinos_medium/
+dataset_v3_medium/
+
+# --- REGLA SURGICAL PARA RUNS (SOLO GRÁFICAS Y MÉTRICAS) ---
+# Ignorar todo en runs por defecto
+runs/**/*
+
+# Permitir solo archivos específicos de resultados
+!runs/**/*.png
+!runs/**/*.jpg
+!runs/**/*.csv
+!runs/**/*.yaml
+
+# Ignorar explícitamente los JSON pesados de predicciones
+runs/**/*.json
+
 !visualizacion_tesis/
 
 # Permitir resúmenes específicos en logs
