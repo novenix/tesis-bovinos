@@ -170,9 +170,11 @@ Este reporte consolida todos los resultados de entrenamiento, validación final 
 
 Se han generado gráficas en formato de alta calidad (SVG/PDF) listas para ser incluidas en el documento de tesis. Se encuentran en: `visualizacion_tesis/consolidado_graficas/`
 
-### 1. Comparativa Global de Desempeño
-*   **Archivo:** `comparativa_modelos_map50.pdf / .svg`
-*   **Descripción:** Gráfica de barras que muestra el mAP50 (Mask) de todos los experimentos en el set de validación final. Ideal para justificar la elección del modelo final.
+### 1. Comparativas Globales de Desempeño
+*   **mAP50 (Mask):** `comparativa_modelos_map50.pdf / .svg`
+*   **Precisión (Mask):** `comparativa_modelos_precision.pdf / .svg`
+*   **Recall (Mask):** `comparativa_modelos_recall.pdf / .svg`
+*   **Descripción:** Gráficas de barras que comparan las métricas clave de todos los experimentos en el set de validación final. Ideal para justificar el balance entre detección y segmentación.
 
 ### 2. Análisis de Generalización (Degradación)
 *   **Archivo:** `degradacion_val_vs_test.pdf / .svg`

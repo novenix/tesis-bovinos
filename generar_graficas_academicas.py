@@ -45,6 +45,30 @@ plt.savefig(f"{output_dir}/comparativa_modelos_map50.pdf")
 plt.savefig(f"{output_dir}/comparativa_modelos_map50.svg")
 plt.close()
 
+# --- GRÁFICA 1B: COMPARATIVA PRECISION MASK ---
+plt.figure(figsize=(10, 6))
+sns.barplot(x="Model", y="P_Mask", data=df, palette="magma")
+plt.title("Comparativa de Precisión (Mask) - Validación")
+plt.ylabel("Precisión")
+plt.xlabel("Modelo")
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.savefig(f"{output_dir}/comparativa_modelos_precision.pdf")
+plt.savefig(f"{output_dir}/comparativa_modelos_precision.svg")
+plt.close()
+
+# --- GRÁFICA 1C: COMPARATIVA RECALL MASK ---
+plt.figure(figsize=(10, 6))
+sns.barplot(x="Model", y="R_Mask", data=df, palette="plasma")
+plt.title("Comparativa de Recall (Mask) - Validación")
+plt.ylabel("Recall")
+plt.xlabel("Modelo")
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.savefig(f"{output_dir}/comparativa_modelos_recall.pdf")
+plt.savefig(f"{output_dir}/comparativa_modelos_recall.svg")
+plt.close()
+
 # --- GRÁFICA 2: DEGRADACIÓN VAL vs TEST (MODELOS DISPONIBLES) ---
 df_deg = df.dropna(subset=['Test_mAP50_Mask']).melt(id_vars=["Model"], value_vars=["Val_mAP50_Mask", "Test_mAP50_Mask"], var_name="Set", value_name="mAP50")
 df_deg['Set'] = df_deg['Set'].replace({"Val_mAP50_Mask": "Validación", "Test_mAP50_Mask": "Test/Rigor"})
