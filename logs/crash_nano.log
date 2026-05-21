@@ -1,0 +1,7 @@
+list index out of range
+Traceback (most recent call last):
+  File "/data/estudiantes/vacas/16.4.preparar_test_rigor_nano.py", line 180, in <module>
+    main()
+  File "/data/estudiantes/vacas/16.4.preparar_test_rigor_nano.py", line 98, in main
+    cls_name = TARGET_CLASSES[int(box.cls[0])]
+IndexError: list index out of range

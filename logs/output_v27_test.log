@@ -1,0 +1,17 @@
+nohup: ignoring input
+🚀 Iniciando TEST FINAL para Proyecto de Grado
+📦 Modelo: /data/estudiantes/vacas/runs/segment/entrenamiento_manual_v27/yolo26_moscas_v2_pequeño_1024/weights/best.pt
+🎯 Dataset: /data/estudiantes/vacas/dataset_moscas_v2/final_dataset_moscas/data_completo.yaml
+WARNING ⚠️ 'save_hybrid' is deprecated and will be removed in the future.
+Ultralytics 8.4.18 🚀 Python-3.10.19 torch-2.5.1+cu118 CUDA:5 (NVIDIA GeForce GTX 1080 Ti, 11172MiB)
+                                                      CUDA:6 (NVIDIA GeForce GTX 1080 Ti, 11172MiB)
+                                                      CUDA:7 (NVIDIA GeForce GTX 1080 Ti, 11172MiB)
+YOLO26m-seg summary (fused): 149 layers, 23,508,239 parameters, 0 gradients, 121.2 GFLOPs
+[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 745.8±282.2 MB/s, size: 58.0 KB)
+[K[34m[1mval: [0mScanning /data/estudiantes/vacas/dataset_moscas_v2/final_dataset_moscas/test/segmented/labels/test.cache... 10 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 10/10 822.4Kit/s 0.0s
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95)     Mask(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 1/1 10.1s/it 10.1s
+                   all         10        392      0.425      0.487      0.362      0.102      0.384      0.457      0.296     0.0685
+Speed: 2.4ms preprocess, 49.2ms inference, 0.0ms loss, 24.9ms postprocess per image
+Saving /data/estudiantes/vacas/runs/segment/test_manual_v27/test_moscas_v2_pequeño_1024/predictions.json...
+Results saved to [1m/data/estudiantes/vacas/runs/segment/test_manual_v27/test_moscas_v2_pequeño_1024[0m
+✅ Test completado. Métricas finales guardadas en: test_manual_v27/test_moscas_v2_pequeño_1024

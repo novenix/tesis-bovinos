@@ -12,8 +12,13 @@ verificacion_manual/
 # Python y Logs
 __pycache__/
 *.log
-logs/
+# logs/ <-- Comentado para permitir archivos específicos o toda la carpeta si se desea
 .ipynb_checkpoints/
+
+# Permitir archivos específicos en logs
+!logs/*.log
+!logs/*.csv
+!logs/*.txt
 
 # Bitácoras de datos
 registro_procesamiento.csv
@@ -23,8 +28,12 @@ dataset_final_yolo/
 dataset_v3_medium/
 
 # --- REGLA SURGICAL PARA RUNS (SOLO GRÁFICAS Y MÉTRICAS) ---
-# Ignorar todo en runs por defecto
+# Ignorar el contenido de runs pero permitir carpetas
 runs/**/*
+!runs/**/
+
+# Excluir específicamente carpetas masivas de inferencia
+runs/conteo_moscas*/
 
 # Permitir solo archivos específicos de resultados
 !runs/**/*.png

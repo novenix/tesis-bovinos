@@ -1,0 +1,32 @@
+W0301 20:13:37.970000 2985673 site-packages/torch/distributed/elastic/agent/server/api.py:704] Received Signals.SIGHUP death signal, shutting down workers
+W0301 20:13:37.971000 2985673 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2985680 closing signal SIGHUP
+W0301 20:13:37.972000 2985673 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2985681 closing signal SIGHUP
+W0301 20:13:37.972000 2985673 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2985682 closing signal SIGHUP
+W0301 20:13:37.973000 2985673 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2985683 closing signal SIGHUP
+W0301 20:13:37.973000 2985673 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 2985684 closing signal SIGHUP
+Traceback (most recent call last):
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/run.py", line 923, in <module>
+    main()
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/run.py", line 919, in main
+    run(args)
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/run.py", line 910, in run
+    elastic_launch(
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 260, in launch_agent
+    result = agent.run()
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/elastic/metrics/api.py", line 137, in wrapper
+    result = f(*args, **kwargs)
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/elastic/agent/server/api.py", line 696, in run
+    result = self._invoke_run(role)
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/elastic/agent/server/api.py", line 855, in _invoke_run
+    time.sleep(monitor_interval)
+  File "/opt/anaconda3/envs/tesis_vacas/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 84, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 2985673 got signal: 1

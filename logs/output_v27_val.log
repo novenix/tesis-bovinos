@@ -1,0 +1,16 @@
+🚀 Iniciando VALIDACIÓN para Proyecto de Grado
+📦 Modelo: /data/estudiantes/vacas/runs/segment/entrenamiento_manual_v27/yolo26_moscas_v2_pequeño_1024/weights/best.pt
+🎯 Dataset: /data/estudiantes/vacas/dataset_moscas_v2/final_dataset_moscas/data_completo.yaml
+WARNING ⚠️ 'save_hybrid' is deprecated and will be removed in the future.
+Ultralytics 8.4.18 🚀 Python-3.10.19 torch-2.5.1+cu118 CUDA:2 (NVIDIA GeForce GTX 1080 Ti, 11172MiB)
+                                                      CUDA:3 (NVIDIA GeForce GTX 1080 Ti, 11172MiB)
+                                                      CUDA:4 (NVIDIA GeForce GTX 1080 Ti, 11172MiB)
+YOLO26m-seg summary (fused): 149 layers, 23,508,239 parameters, 0 gradients, 121.2 GFLOPs
+[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 719.8±199.1 MB/s, size: 44.2 KB)
+[K[34m[1mval: [0mScanning /data/estudiantes/vacas/dataset_moscas_v2/final_dataset_moscas/val/segmented/labels/val.cache... 10 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 10/10 1.1Mit/s 0.0s
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95)     Mask(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 1/1 12.4s/it 12.4s
+                   all         10        227      0.537      0.467      0.421      0.136      0.489      0.489      0.415      0.109
+Speed: 8.6ms preprocess, 54.6ms inference, 0.0ms loss, 30.7ms postprocess per image
+Saving /data/estudiantes/vacas/runs/segment/validacion_manual_v27/val_moscas_v2_pequeño_1024/predictions.json...
+Results saved to [1m/data/estudiantes/vacas/runs/segment/validacion_manual_v27/val_moscas_v2_pequeño_1024[0m
+✅ Validación completada. Resultados en: validacion_manual_v27/val_moscas_v2_pequeño_1024
