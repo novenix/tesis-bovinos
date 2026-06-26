@@ -388,8 +388,21 @@ Para dudas o problemas:
 **Autor**: [Tu Nombre]
 **Institución**: [Tu Universidad]
 **Fecha**: Febrero 2026
-**Licencia**: MIT (uso académico)
+## Licencia
+
+Este trabajo está distribuido bajo la licencia **[Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional](http://creativecommons.org/licenses/by-nc-sa/4.0/)**. 
+
+Esto significa que eres libre de:
+* **Compartir:** copiar y redistribuir el material en cualquier medio o formato.
+* **Adaptar:** remezclar, transformar y crear a partir del material.
+
+Bajo los siguientes términos:
+* **Atribución:** Debes dar crédito de manera adecuada.
+* **No Comercial:** No puedes hacer uso del material con fines comerciales.
+* **Compartir Igual:** Si remezclas, transformas o creas a partir del material, debes distribuir tu contribución bajo la misma licencia del original.
 
 ---
 
 *Generado con Claude Code - Anthropic AI*
+
+
